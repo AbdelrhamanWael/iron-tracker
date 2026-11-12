@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fitness & Nutrition Tracker | Athletic Performance</title>
+<!-- Google Fonts: Barlow Condensed (Athletic Headings), Barlow (Body), JetBrains Mono (Metrics) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        condensed: ['"Barlow Condensed"', 'sans-serif'],
+        sans: ['"Barlow"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace']
+      },
+      colors: {
+        gold: {
+          300: '#FDE68A',
+          400: '#FBBF24',
+          500: '#F59E0B',
+          600: '#D97706',
+          700: '#B45309'
+        },
+        onyx: {
+          950: '#070709',
+          900: '#0B0B0F',
+          850: '#111116',
+          800: '#16161D',
+          700: '#1D1D26',
+          600: '#262632',
+          500: '#353545'
+        }
+      }
+    }
+  }
+}
+</script>
+<style>
+:root {
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --color-primary: #F59E0B;
+  --color-bg: #0B0B0F;
+  --color-card: #14141A;
+}
+
+body {
+  background-color: #0B0B0F;
+  color: #F8FAFC;
+  font-family: 'Barlow', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+}
+
+/* Authentic Athletic Matte Carbon Cards (Non-generic, precision edge, zero AI blur) */
+.athletic-card {
+  background: linear-gradient(165deg, #16161D 0%, #101015 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.15rem;
+  padding: 1.25rem;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.athletic-card:hover {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Primary Athletic Button: Gold/Amber Solid Impact */
+.btn-gold {
+  min-height: 44px;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #0B0B0F;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 0.75rem;
+  padding: 0.55rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+.btn-gold:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+}
+.btn-gold:active {
+  transform: translateY(0);
+}
+
+/* Secondary Button: Stealth Graphite */
+.btn-stealth {
+  min-height: 44px;
+  background: #1C1C24;
+  color: #E2E8F0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.75rem;
+  padding: 0.55rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.btn-stealth:hover {
+  background: #252530;
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Navigation Tab Item */
+.tab-pill {
+  min-height: 44px;
+  padding: 0.55rem 1.15rem;
+  border-radius: 0.85rem;
+  background: #14141A;
+  color: #94A3B8;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+.tab-pill:hover {
+  color: #F8FAFC;
+  background: #1C1C24;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.tab-pill.on {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #070709;
+  font-weight: 800;
+  border-color: #FBBF24;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+}
+
+/* Precision Chamfered Exercise Thumbnail */
+.ex-frame {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 0.9rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  background-color: #050508;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+.ex-frame:hover {
+  transform: scale(1.05);
+  border-color: #F59E0B;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+}
+
+/* Set Row Components */
+.set-chip {
+  background: #101015;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.set-chip.done {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+/* Checkbox Button */
+.check-trigger {
+  width: 32px;
+  height: 32px;
+  border-radius: 0.55rem;
+  border: 1.5px solid #3F3F4E;
+  background: #0E0E14;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: transparent;
+}
+.check-trigger:hover {
+  border-color: #10B981;
+}
+.check-trigger.checked {
+  background: #10B981;
+  border-color: #34D399;
+  color: #070709;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Inputs */
+input, select, textarea {
+  background: #0B0B0F;
+  border: 1px solid #2A2A38;
+  border-radius: 0.65rem;
+  padding: 0.45rem 0.65rem;
+  color: #F8FAFC;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #F59E0B;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+/* Lightbox Modal */
+#modal {
+  backdrop-filter: blur(12px);
+}
+</style>
+</head>
+<body class="pb-32">
+
+<!-- Sticky Athletic Header -->
+<header class="sticky top-0 z-30 bg-[#0B0B0F]/95 backdrop-blur-md border-b border-white/[0.08] px-4 py-3">
+  <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+    <!-- Brand / Title -->
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-onyx-950 shadow-lg shadow-amber-500/25 border border-amber-300/50">
+        <svg class="w-6 h-6 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 5v14M18 5v14M4 7v10M20 7v10M6 12h12"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-2xl font-condensed font-black tracking-wide uppercase text-white leading-none">
+          GYM TRACKER <span class="text-amber-400">PRO</span>
+        </h1>
+        <p class="text-xs text-slate-400 font-medium tracking-wide mt-1">Onyx & Raw Athletic Performance</p>
+      </div>
+    </div>
+
+    <!-- Date Selector (44px target) -->
+    <div class="flex items-center gap-2">
+      <input id="date" type="date" dir="ltr" class="text-sm font-semibold font-mono min-h-[44px] cursor-pointer" onchange="cur=this.value||today();render()" aria-label="Select Date">
+    </div>
+  </div>
+
+  <!-- Primary Tab Pills -->
+  <nav id="nav" class="max-w-5xl mx-auto flex gap-2 overflow-x-auto mt-3 pb-1 scrollbar-none" role="tablist"></nav>
+</header>
+
+<!-- Main Container -->
+<main id="app" class="max-w-5xl mx-auto p-3.5 sm:p-4 space-y-4"></main>
+
+<!-- Floating Tactical Rest Timer Dock -->
+<aside id="timer-dock" class="fixed bottom-3.5 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-md bg-[#121218]/95 backdrop-blur-lg border border-amber-500/40 rounded-2xl p-2.5 sm:p-3 shadow-2xl flex items-center justify-between gap-2 text-sm" aria-label="Tactical Rest Timer">
+  <div class="flex items-center gap-2.5">
+    <button onclick="toggleTimer()" id="t-btn" class="w-11 h-11 rounded-xl bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 active:scale-95 flex items-center justify-center font-bold text-lg border border-amber-500/40 transition cursor-pointer" aria-label="Play or Pause Timer">
+      <svg id="t-icon-play" class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="t-icon-pause" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <div>
+      <div class="text-[10px] text-slate-400 uppercase tracking-widest font-bold font-condensed">Rest Interval</div>
+      <div id="t-disp" class="text-xl sm:text-2xl font-black font-mono text-amber-400 leading-none">01:30</div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-1.5">
+    <button onclick="setTimerSec(60)" class="min-h-[38px] px-2.5 py-1 text-xs font-bold font-condensed uppercase tracking-wider bg-onyx-700 hover:bg-onyx-600 text-slate-300 rounded-lg cursor-pointer transition">60s</button>
+    <button onclick="setTimerSec(90)" class="min-h-[38px] px-2.5 py-1 text-xs font-black font-condensed uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-lg cursor-pointer transition">90s</button>
+    <button onclick="setTimerSec(120)" class="min-h-[38px] px-2.5 py-1 text-xs font-bold font-condensed uppercase tracking-wider bg-onyx-700 hover:bg-onyx-600 text-slate-300 rounded-lg cursor-pointer transition">120s</button>
+    <button onclick="resetTimer()" class="min-h-[38px] min-w-[38px] p-2 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer" aria-label="Reset Timer">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- Modal Lightbox for Exercise Images -->
+<div id="modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4 transition-all duration-200" onclick="closeModal(event)" role="dialog" aria-modal="true">
+  <div class="bg-onyx-800 border border-white/10 max-w-lg w-full rounded-2xl overflow-hidden shadow-2xl transform transition-all" onclick="event.stopPropagation()">
+    <div class="p-4 border-b border-white/[0.08] flex items-center justify-between bg-onyx-850">
+      <div>
+        <h3 id="modal-title" class="font-condensed font-black text-xl text-amber-400 uppercase tracking-wide"></h3>
+        <span id="modal-meta" class="text-xs text-slate-400">Exercise Execution & Posture</span>
+      </div>
+      <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-onyx-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm cursor-pointer" aria-label="Close modal">✕</button>
+    </div>
+    <div class="p-4 flex flex-col items-center">
+      <img id="modal-img" src="" class="max-h-[60vh] w-auto rounded-xl object-contain shadow-2xl border border-white/10 bg-black" alt="Exercise Form">
+      <div id="modal-desc" class="text-xs text-slate-300 mt-3 text-center leading-relaxed max-w-md bg-onyx-900 border border-white/[0.08] p-3 rounded-xl font-medium"></div>
+    </div>
+    <div class="p-3 bg-onyx-850 border-t border-white/[0.08] flex justify-end">
+      <button onclick="closeModal()" class="btn-gold text-xs py-2 px-6">Got It</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 1. DATA & WORKOUT DEFINITIONS */
+const X = s => s.split(';').map(e => {
+  const [n, a, b] = e.split('|');
+  return { n, s: +(a || 3), r: +(b || 12) };
+});
+
+const CD = 'Light Treadmill Walk (15 min)';
+
+const D = [
+  {
+    t: 'Day 1: Push A (Dumbbell)',
+    tag: 'Chest • Shoulders • Triceps • Forearms',
+    ex: X('Dumbbell Chest Incline Press;Machine Lying Chest Press;Dumbbell Shoulder Seated Lateral Raises;Selection Machine Chest Flat Fly;Cable Rope Triceps Overhead Extension;Cable Ez. Bar Reverse Grip Triceps Push Down;Dumbbell Wrist Flexion|2|15;Dumbbell Wrist Extension|2|15'),
+    st: ['Chest Stretch (2 × 30 sec per side)', 'Rear Delt & Triceps Stretch (2 × 30 sec per side)']
+  },
+  {
+    t: 'Day 2: Pull A',
+    tag: 'Back • Rear Delts • Traps • Biceps',
+    ex: X('Machine Back Wide Grip Lat Pulldown;Machine Back T-Bar Wide Grip Row;Plate Loaded Machine Wide Grip Dual Low Row;Machine Shoulder Rear Fly;Cable St. Bar Trap Shrug;Dumbbell Preacher Single Arm Bicep Curl;Dumbbell Incline Dual Curl;Dumbbell Biceps Seated Hammer Curl'),
+    st: ["Child's Pose Stretch (2 × 30 sec)", 'Shoulders Stretch (2 × 30 sec)']
+  },
+  {
+    t: 'Day 3: Legs & Abs',
+    tag: 'Quads • Glutes • Hamstrings • Calves • Core',
+    ex: X('Selection Machine Leg Press Narrow Stance;Machine Glute Thrusting;Machine Leg Extension;Dumbbell Stiff-Leg Deadlift;Selection Machine Leg Adduction;Selection Machine Leg Abduction;Seated Calf Raise Machine;Supine Leg Raises;Cable Pallof Press|2|15'),
+    st: ['Hamstring Stretch (2 × 30 sec)', 'Calves Stretch (2 × 30 sec per side)']
+  },
+  {
+    t: 'Day 4: Push B (Barbell)',
+    tag: 'Chest • Shoulders • Triceps • Forearms',
+    ex: X('Barbell Incline Chest Press;Machine Lying Chest Press;Machine Shoulder Lateral Raises;Selection Machine Chest Flat Fly;Dumbbell Incline Tricep Skull Crusher;Cable Single Grip Triceps Pushdown;Dumbbell Wrist Flexion|2|15;Dumbbell Wrist Extension|2|15'),
+    st: ['Chest Stretch (2 × 30 sec per side)', 'Rear Delt & Triceps Stretch (2 × 30 sec per side)']
+  },
+  {
+    t: 'Day 5: Pull B',
+    tag: 'Back • Rear Delts • Traps • Biceps',
+    ex: X('Machine Back T-Bar Wide Grip Row;Machine Back Wide Grip Lat Pulldown;Plate Loaded Machine Close Grip Dual Low Row;Machine Shoulder Rear Fly;Smith Machine Shrugs;Cable Biceps Close Curls;Dumbbell Incline Dual Curl;Dumbbell Biceps Seated Hammer Curl'),
+    st: ["Child's Pose Stretch (2 × 30 sec)", 'Shoulders Stretch (2 × 30 sec)']
+  }
+];
+
+const CARB = {
+  b: '110 g Baladi Bread (1 large whole loaf)',
+  p: '350 g Boiled Potatoes'
+};
+
+const M = [
+  { t: 'Meal 1 (Breakfast)', k: 780, p: 53, it: ['3 Eggs Omelet (3 Units)', '220 g Cottage Cheese', null, '200 g Veggies, Cucumber & Sweet Pepper'] },
+  { t: 'Meal 2 (Lunch)', k: 738, p: 70, it: ['220 g Grilled Chicken Breast', '95 g Raw White Rice (weighed before cooking)', '100 g Veggies (any)'] }
+];
+
+const SUP = ['Creatine (5g)', 'Omega-3', 'Vitamin D3', 'Magnesium', 'Zinc'];
+
+const T = [
+  { id: 0, label: 'DAILY TRACKER', icon: '<svg class="w-4 h-4 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>' },
+  { id: 1, label: 'WORKOUT LOGGER', icon: '<svg class="w-4 h-4 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 5v14M18 5v14M4 7v10M20 7v10M6 12h12"/></svg>' },
+  { id: 2, label: 'NUTRITION PLAN', icon: '<svg class="w-4 h-4 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m0 0c-4 0-7 3-7 7a7 7 0 0013.3 3.1c.4-.7.7-1.4.7-2.1 0-4-3-8-7-8zm0 0c1.5-2 3.5-3 5-3"/></svg>' },
+  { id: 3, label: 'ANALYTICS & PROGRESS', icon: '<svg class="w-4 h-4 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>' }
+];
+
+/* 2. IMAGE MAPPING */
+const IMG_MAP = {
+  "Dumbbell Chest Incline Press": "assets/exercises/Dumbbell_Chest_Incline_Press.jpg",
+  "Machine Lying Chest Press": "assets/exercises/Machine_Lying_Chest_Press.jpg",
+  "Dumbbell Shoulder Seated Lateral Raises": "assets/exercises/Dumbbell_Shoulder_Seated_Lateral_Raises.jpg",
+  "Selection Machine Chest Flat Fly": "assets/exercises/Selection_Machine_Chest_Flat_Fly.jpg",
+  "Cable Rope Triceps Overhead Extension": "assets/exercises/Cable_Rope_Triceps_Overhead_Extension.jpg",
+  "Cable Ez. Bar Reverse Grip Triceps Push Down": "assets/exercises/Cable_Ez_Bar_Reverse_Grip_Triceps_Push_Down.jpg",
+  "Dumbbell Wrist Flexion": "assets/exercises/Dumbbell_Wrist_Flexion.jpg",
+  "Dumbbell Wrist Extension": "assets/exercises/Dumbbell_Wrist_Extension.jpg",
+  "Machine Back Wide Grip Lat Pulldown": "assets/exercises/Machine_Back_Wide_Grip_Lat_Pulldown.jpg",
+  "Machine Back T-Bar Wide Grip Row": "assets/exercises/Machine_Back_T-Bar_Wide_Grip_Row.jpg",
+  "Plate Loaded Machine Wide Grip Dual Low Row": "assets/exercises/Plate_Loaded_Machine_Wide_Grip_Dual_Low_Row.jpg",
+  "Machine Shoulder Rear Fly": "assets/exercises/Machine_Shoulder_Rear_Fly.jpg",
+  "Cable St. Bar Trap Shrug": "assets/exercises/Cable_St_Bar_Trap_Shrug.jpg",
+  "Dumbbell Preacher Single Arm Bicep Curl": "assets/exercises/Dumbbell_Preacher_Single_Arm_Bicep_Curl.jpg",
+  "Dumbbell Incline Dual Curl": "assets/exercises/Dumbbell_Incline_Dual_Curl.jpg",
+  "Dumbbell Biceps Seated Hammer Curl": "assets/exercises/Dumbbell_Biceps_Seated_Hammer_Curl.jpg",
+  "Selection Machine Leg Press Narrow Stance": "assets/exercises/Selection_Machine_Leg_Press_Narrow_Stance.jpg",
+  "Machine Glute Thrusting": "assets/exercises/Machine_Glute_Thrusting.jpg",
+  "Machine Leg Extension": "assets/exercises/Machine_Leg_Extension.jpg",
+  "Dumbbell Stiff-Leg Deadlift": "assets/exercises/Dumbbell_Stiff-Leg_Deadlift.jpg",
+  "Selection Machine Leg Adduction": "assets/exercises/Selection_Machine_Leg_Adduction.jpg",
+  "Selection Machine Leg Abduction": "assets/exercises/Selection_Machine_Leg_Abduction.jpg",
+  "Seated Calf Raise Machine": "assets/exercises/Seated_Calf_Raise_Machine.jpg",
+  "Supine Leg Raises": "assets/exercises/Supine_Leg_Raises.jpg",
+  "Cable Pallof Press": "assets/exercises/Cable_Pallof_Press.jpg",
+  "Barbell Incline Chest Press": "assets/exercises/Barbell_Incline_Chest_Press.jpg",
+  "Machine Shoulder Lateral Raises": "assets/exercises/Machine_Shoulder_Lateral_Raises.jpg",
+  "Dumbbell Incline Tricep Skull Crusher": "assets/exercises/Dumbbell_Incline_Tricep_Skull_Crusher.jpg",
+  "Cable Single Grip Triceps Pushdown": "assets/exercises/Cable_Single_Grip_Triceps_Pushdown.jpg",
+  "Plate Loaded Machine Close Grip Dual Low Row": "assets/exercises/Plate_Loaded_Machine_Close_Grip_Dual_Low_Row.jpg",
+  "Smith Machine Shrugs": "assets/exercises/Smith_Machine_Shrugs.jpg",
+  "Cable Biceps Close Curls": "assets/exercises/Cable_Biceps_Close_Curls.jpg",
+  "Chest Stretch": "assets/exercises/Chest_Stretch.jpg",
+  "Rear Delt & Triceps Stretch": "assets/exercises/Rear_Delt_and_Triceps_Stretch.jpg",
+  "Child's Pose Stretch": "assets/exercises/Childs_Pose_Stretch.jpg",
+  "Shoulders Stretch": "assets/exercises/Shoulders_Stretch.jpg",
+  "Hamstring Stretch": "assets/exercises/Hamstring_Stretch.jpg",
+  "Calves Stretch": "assets/exercises/Calves_Stretch.jpg",
+  "Light Treadmill Walk": "assets/exercises/Light_Treadmill_Walk.jpg"
+};
+
+function getExImg(name) {
+  if (!name) return '';
+  const clean = name.trim();
+  if (IMG_MAP[clean]) return IMG_MAP[clean];
+  for (const [k, v] of Object.entries(IMG_MAP)) {
+    if (clean.includes(k) || k.includes(clean)) return v;
+  }
+  return '';
+}
+
+/* 3. PERSISTENCE & DATA ENGINE */
+let S;
+try { S = JSON.parse(localStorage.getItem('fit1')); } catch (e) {}
+S = S || {};
+S.w = S.w || {};
+S.d = S.d || {};
+S.l = S.l || {};
+
+const save = () => { try { localStorage.setItem('fit1', JSON.stringify(S)); } catch (e) {} };
+const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const $ = s => document.querySelector(s);
+const fmt = (n, d = 1) => Number.isFinite(n) ? n.toFixed(d) : '—';
+
+let cur = today(), tab = 0, chW, chE, selEx = null;
+
+const dd = (d = cur) => {
+  const x = S.d[d] = S.d[d] || {};
+  x.ck = x.ck || {};
+  x.sp = x.sp || {};
+  x.b = x.b || 'b';
+  x.wt = x.wt || 0;
+  x.wd = x.wd || 1;
+  return x;
+};
+
+const lg = (d = cur) => {
+  const x = S.l[d] = S.l[d] || {};
+  x.sets = x.sets || {};
+  x.st = x.st || {};
+  return x;
+};
+
+const ids = i => M[i].it.map((_, j) => i + '_' + j);
+const mealDone = (d, i) => { const x = S.d[d]; return !!x && !!x.ck && ids(i).every(k => x.ck[k]); };
+const kcal = d => M.reduce((a, m, i) => a + (mealDone(d, i) ? m.k : 0), 0);
+const sv = a => (a || []).filter(Boolean).reduce((s, x) => s + (+x[0] || 0) * (+x[1] || 0), 0);
+const vol = d => { const l = S.l[d]; return l && l.sets ? Object.values(l.sets).reduce((s, a) => s + sv(a), 0) : 0; };
+const hasData = d => S.w[d] || vol(d) > 0 || (S.d[d] && ((S.d[d].ck && Object.values(S.d[d].ck).some(Boolean)) || S.d[d].wt > 0));
+const dates = () => [...new Set([...Object.keys(S.w), ...Object.keys(S.d), ...Object.keys(S.l)])].filter(hasData).sort();
+const startD = () => dates()[0] || cur;
+const wkOf = d => Math.floor((new Date(d) - new Date(startD())) / 6048e5) + 1;
+
+const bar = (p, color = 'bg-amber-500') => `
+<div class="h-2.5 bg-onyx-950 rounded-full overflow-hidden border border-white/[0.08]">
+  <div class="h-full ${color} rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(245,158,11,0.4)]" style="width:${Math.min(100, Math.max(0, p))}%"></div>
+</div>`;
+
+const chk = (c, f, l) => `
+<label class="flex items-center gap-3 py-2 px-2.5 rounded-xl hover:bg-onyx-700/60 cursor-pointer transition min-h-[44px]">
+  <input type="checkbox" ${c ? 'checked' : ''} onchange="${f}" class="w-5 h-5 rounded-md accent-amber-500 cursor-pointer">
+  <span class="text-sm font-medium ${c ? 'text-slate-500 line-through' : 'text-slate-100'}">${l}</span>
+</label>`;
+
+function ghost(n) {
+  const ds = Object.keys(S.l).filter(d => d < cur).sort().reverse();
+  for (const d of ds) {
+    const a = ((S.l[d].sets || {})[n] || []).filter(x => x && +x[0] > 0);
+    if (a.length) {
+      const b = a.reduce((m, x) => +x[0] > +m[0] ? x : m);
+      return `LAST: ${b[0]}kg × ${b[1] || '?'}`;
+    }
+  }
+  return 'NO PREVIOUS DATA';
+}
+
+/* 4. ACTIONS */
+const setW = v => { v ? S.w[cur] = v : delete S.w[cur]; save(); };
+const setMeal = (i, v) => { const x = dd(); ids(i).forEach(k => x.ck[k] = v); save(); render(); };
+const setCk = (k, v) => { dd().ck[k] = v; save(); render(); };
+const setSp = (i, v) => { dd().sp[i] = v; save(); };
+const setWt = d => { const x = dd(); x.wt = Math.max(0, Math.round((x.wt + d) * 100) / 100); save(); render(); };
+const setDay = n => { dd().wd = n; save(); render(); };
+const setCarb = v => { dd().b = v ? 'p' : 'b'; save(); render(); };
+const goTab = n => { tab = n; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
+function setv(ei, i, j, v) {
+  const e = D[dd().wd - 1].ex[ei], L = lg();
+  const a = L.sets[e.n] = L.sets[e.n] || Array.from({ length: e.s }, () => ['', '', 0]);
+  a[i] = a[i] || ['', '', 0];
+  a[i][j] = v;
+  save();
+  const vEl = $('#live-vol');
+  if (vEl) vEl.textContent = fmt(vol(cur), 0) + ' kg';
+}
+
+function toggleSetDone(ei, i) {
+  const e = D[dd().wd - 1].ex[ei], L = lg();
+  const a = L.sets[e.n] = L.sets[e.n] || Array.from({ length: e.s }, () => ['', '', 0]);
+  a[i] = a[i] || ['', '', 0];
+  const nextDone = a[i][2] ? 0 : 1;
+  a[i][2] = nextDone;
+  save();
+  
+  const row = $(`#set-row-${ei}-${i}`);
+  const btn = $(`#check-btn-${ei}-${i}`);
+  if (row) {
+    if (nextDone) {
+      row.classList.add('done');
+      if (btn) btn.classList.add('checked');
+      startRestTimerAuto();
+    } else {
+      row.classList.remove('done');
+      if (btn) btn.classList.remove('checked');
+    }
+  }
+}
+
+const setSt = (k, v) => { lg().st[k] = v; save(); };
+
+/* 5. TACTICAL REST TIMER ENGINE */
+let timerSec = 90, timerCur = 90, timerInterval = null, timerRunning = false;
+
+function fmtTimer(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m < 10 ? '0' : ''}${m}:${r < 10 ? '0' : ''}${r}`;
+}
+
+function updateTimerUI() {
+  const disp = $('#t-disp');
+  const pIcon = $('#t-icon-play');
+  const paIcon = $('#t-icon-pause');
+  if (disp) disp.textContent = fmtTimer(timerCur);
+  if (pIcon && paIcon) {
+    if (timerRunning) {
+      pIcon.classList.add('hidden');
+      paIcon.classList.remove('hidden');
+    } else {
+      pIcon.classList.remove('hidden');
+      paIcon.classList.add('hidden');
+    }
+  }
+}
+
+function toggleTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+  } else {
+    if (timerCur <= 0) timerCur = timerSec;
+    timerRunning = true;
+    timerInterval = setInterval(() => {
+      timerCur--;
+      updateTimerUI();
+      if (timerCur <= 0) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        updateTimerUI();
+        beepTimer();
+      }
+    }, 1000);
+  }
+  updateTimerUI();
+}
+
+function setTimerSec(s) {
+  timerSec = s;
+  timerCur = s;
+  clearInterval(timerInterval);
+  timerRunning = false;
+  toggleTimer();
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerCur = timerSec;
+  updateTimerUI();
+}
+
+function startRestTimerAuto() {
+  timerCur = timerSec;
+  clearInterval(timerInterval);
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    timerCur--;
+    updateTimerUI();
+    if (timerCur <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      updateTimerUI();
+      beepTimer();
+    }
+  }, 1000);
+  updateTimerUI();
+}
+
+function beepTimer() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(600, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.8);
+  } catch(e) {}
+  if (navigator.vibrate) {
+    try { navigator.vibrate([200, 100, 200, 100, 300]); } catch(e) {}
+  }
+}
+
+/* 6. MODAL LIGHTBOX */
+function openModal(title, imgSrc, desc = '') {
+  const m = $('#modal');
+  $('#modal-title').textContent = title;
+  $('#modal-img').src = imgSrc;
+  $('#modal-desc').textContent = desc || 'Drive with full intent. Control the 3-second negative descent, pause slightly at the bottom, and contract violently without compromising joint mechanics.';
+  m.classList.remove('hidden');
+}
+
+function closeModal() {
+  $('#modal').classList.add('hidden');
+}
+
+/* 7. VIEWS */
+function dayTabsBar() {
+  const x = dd();
+  return `
+  <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none" role="tablist">
+    ${D.map((d, i) => `
+      <button class="tab-pill ${x.wd == i + 1 ? 'on' : ''} text-xs flex flex-col items-center justify-center min-w-[90px]" onclick="setDay(${i + 1})" role="tab">
+        <span class="font-condensed font-black tracking-wider text-sm">DAY ${i + 1}</span>
+        <span class="text-[10px] opacity-80 font-normal truncate max-w-[95px]">${d.t.split(':')[1]?.split('(')[0]?.trim() || ''}</span>
+      </button>
+    `).join('')}
+  </div>`;
+}
+
+function carbTxt() { return CARB[dd().b]; }
+function mealItem(i, j, t) {
+  const k = i + '_' + j;
+  return chk(dd().ck[k], `setCk('${k}',this.checked)`, t === null ? `<b class="text-amber-400 font-bold">${carbTxt()}</b>` : t);
+}
+
+/* Tab 0: Daily Tracker */
+function daily() {
+  const x = dd(), v = vol(cur), k = kcal(cur), p = x.wt / 3.5 * 100;
+  const currentWorkout = D[x.wd - 1];
+
+  return `
+  <div class="grid md:grid-cols-2 gap-4">
+    <!-- Active Workout Card -->
+    <div class="athletic-card md:col-span-2 border-amber-500/35">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div>
+          <span class="text-[11px] font-condensed uppercase tracking-widest font-black text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/30">
+            SESSION SCHEDULED
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-condensed font-black text-white mt-1 tracking-wide uppercase">${currentWorkout.t}</h2>
+          <p class="text-xs text-slate-400 font-medium">${currentWorkout.tag}</p>
+        </div>
+        <button class="btn-gold" onclick="goTab(1)">
+          <span>START SESSION</span>
+          <svg class="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+      ${dayTabsBar()}
+
+      <!-- Exercises Preview Grid -->
+      <div class="mt-4 pt-3.5 border-t border-white/[0.08]">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-3 font-condensed tracking-wider uppercase">
+          <span class="font-bold">TODAY'S EXERCISES (${currentWorkout.ex.length})</span>
+          <span>VOLUME LOGGED: <b id="live-vol" class="text-amber-400 font-bold font-mono text-sm">${fmt(v, 0)} kg</b></span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          ${currentWorkout.ex.map((e, idx) => {
+            const img = getExImg(e.n);
+            return `
+            <div class="flex items-center gap-2.5 p-2 rounded-xl bg-onyx-900 border border-white/[0.06] hover:border-amber-500/40 transition">
+              <img src="${img}" alt="${e.n}" class="w-12 h-12 rounded-lg object-cover bg-black flex-shrink-0 cursor-pointer border border-white/10 hover:border-amber-500 transition" onclick="openModal('${e.n.replace(/'/g, "\\'")}', '${img}', '${e.s} sets × ${e.r} reps • Tempo: 3-1-1-0')">
+              <div class="overflow-hidden">
+                <div class="text-xs font-semibold text-slate-200 truncate cursor-pointer hover:text-amber-400" title="${e.n}" onclick="openModal('${e.n.replace(/'/g, "\\'")}', '${img}')">${e.n}</div>
+                <div class="text-[11px] text-amber-400 font-bold font-condensed tracking-wider mt-0.5">${e.s} SETS × ${e.r}</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Body Weight Card -->
+    <div class="athletic-card">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-condensed font-black tracking-wider uppercase text-amber-400 flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 12h12l3-12H3zm9 0v14m-6-8h12"/></svg>
+          <span>BODY WEIGHT TODAY</span>
+        </h2>
+        <span class="text-xs font-mono text-slate-400">Target: −0.75 to −1.0 kg/wk</span>
+      </div>
+      <p class="text-xs text-slate-400 mb-3">Fasted morning weigh-in after wake up.</p>
+      <div class="flex items-center gap-3">
+        <input type="number" step="0.1" dir="ltr" class="w-36 text-xl font-bold font-mono text-center min-h-[44px]" value="${S.w[cur] ?? ''}" placeholder="00.0" onchange="setW(this.value)">
+        <span class="text-base font-bold text-slate-300 font-condensed">KG</span>
+      </div>
+    </div>
+
+    <!-- Meals Adherence Card -->
+    <div class="athletic-card">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-condensed font-black tracking-wider uppercase text-amber-400 flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>NUTRITION ADHERENCE</span>
+        </h2>
+        <span class="text-xs font-mono font-bold ${k >= 1518 ? 'text-emerald-400' : 'text-amber-400'}">${k} / 1518 kcal</span>
+      </div>
+      ${bar(k / 1518 * 100, k >= 1518 ? 'bg-emerald-500' : 'bg-amber-500')}
+      <div class="mt-3.5 space-y-1">
+        ${M.map((m, i) => chk(mealDone(cur, i), `setMeal(${i},this.checked)`, `<span class="font-bold text-slate-100">${m.t}</span> — <span class="text-slate-400 text-xs font-mono">${m.k} kcal | ${m.p}g P</span>`)).join('')}
+      </div>
+      <button class="btn-stealth w-full mt-3.5 text-xs font-bold" onclick="goTab(2)">
+        <span>NUTRITION DETAILS</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- Daily Hydration Card -->
+    <div class="athletic-card">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-condensed font-black tracking-wider uppercase text-sky-400 flex items-center gap-2">
+          <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+          <span>DAILY HYDRATION</span>
+        </h2>
+        <span class="text-xs font-mono font-bold text-sky-400">${x.wt} / 3.5 L</span>
+      </div>
+      ${bar(p, 'bg-sky-500')}
+      <div class="grid grid-cols-3 gap-2 mt-4">
+        <button class="min-h-[44px] px-2 py-2 text-xs font-bold font-condensed uppercase tracking-wider rounded-xl bg-sky-950/70 hover:bg-sky-900 border border-sky-800 text-sky-300 transition cursor-pointer" onclick="setWt(0.25)">+ 250 ML</button>
+        <button class="min-h-[44px] px-2 py-2 text-xs font-bold font-condensed uppercase tracking-wider rounded-xl bg-sky-950/70 hover:bg-sky-900 border border-sky-800 text-sky-300 transition cursor-pointer" onclick="setWt(0.5)">+ 500 ML</button>
+        <button class="min-h-[44px] px-2 py-2 text-xs font-bold font-condensed uppercase tracking-wider rounded-xl bg-onyx-800 hover:bg-onyx-700 border border-white/10 text-slate-300 transition cursor-pointer" onclick="setWt(-0.25)">− 250 ML</button>
+      </div>
+    </div>
+
+    <!-- Daily Supplements Card -->
+    <div class="athletic-card">
+      <h2 class="text-lg font-condensed font-black tracking-wider uppercase text-amber-400 mb-2 flex items-center gap-2">
+        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6.5l7 7a4.95 4.95 0 01-7 7l-7-7a4.95 4.95 0 017-7zm-2 2l7 7"/></svg>
+        <span>DAILY SUPPLEMENTS</span>
+      </h2>
+      <div class="grid grid-cols-2 gap-2 mt-2">
+        ${SUP.map((s, i) => chk(x.sp[i], `setSp(${i},this.checked)`, `<span dir="ltr" class="font-medium">${s}</span>`)).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* Tab 1: Workout Logger (Athletic Split Row) */
+function log() {
+  const x = dd(), d = D[x.wd - 1], L = lg();
+  const v = vol(cur);
+
+  return `
+  <!-- Day Header -->
+  <div class="athletic-card">
+    ${dayTabsBar()}
+    <div class="mt-3.5 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] pt-3.5">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-condensed font-black tracking-wide uppercase text-white">${d.t}</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Tempo: <b class="text-amber-400 font-mono">3-1-1-0</b> | Target RPE: <b class="text-slate-200">7</b> (Final set: 8.5-9) | Week ${wkOf(cur)}</p>
+      </div>
+      <div class="text-right">
+        <div class="text-[11px] font-condensed tracking-wider uppercase text-slate-400 font-bold">SESSION VOLUME</div>
+        <div id="live-vol" class="text-2xl font-mono font-black text-amber-400">${fmt(v, 0)} kg</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercises List -->
+  <div class="space-y-3.5">
+    ${d.ex.map((e, ei) => {
+      const a = L.sets[e.n] || [];
+      const img = getExImg(e.n);
+      return `
+      <div class="athletic-card p-3.5 sm:p-4">
+        <div class="flex items-start gap-3 sm:gap-4">
+          <!-- 80x80 Precision Framed Thumbnail -->
+          <img src="${img}" alt="${e.n}" class="ex-frame" onclick="openModal('${e.n.replace(/'/g, "\\'")}', '${img}', 'Target: ${e.s} sets × ${e.r} reps • Tempo: 3-1-1-0 • RPE: 7')">
+          
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="font-condensed font-black text-lg sm:text-xl text-white uppercase tracking-wide leading-tight cursor-pointer hover:text-amber-400 transition" onclick="openModal('${e.n.replace(/'/g, "\\'")}', '${img}')">
+                ${ei + 1}. ${e.n}
+              </h3>
+              <span class="text-xs font-condensed font-extrabold bg-onyx-800 text-amber-400 border border-amber-500/30 rounded-lg px-2.5 py-1">
+                ${e.s} SETS × ${e.r} REPS
+              </span>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2 mt-1">
+              <span class="inline-block text-[11px] bg-onyx-950 text-slate-300 border border-white/10 rounded px-2.5 py-0.5 font-bold font-mono">
+                ${ghost(e.n)}
+              </span>
+            </div>
+
+            <!-- Set Input Chips -->
+            <div class="flex flex-wrap gap-2 mt-3" dir="ltr">
+              ${Array.from({ length: e.s }, (_, i) => {
+                const s = a[i] || ['', '', 0];
+                const isDone = !!s[2];
+                return `
+                <div id="set-row-${ei}-${i}" class="set-chip flex items-center gap-1.5 ${isDone ? 'done' : ''}">
+                  <span class="text-xs font-mono font-black text-amber-400">S${i + 1}</span>
+                  <input type="number" step="0.5" placeholder="kg" class="w-16 sm:w-20 text-center text-xs font-bold font-mono min-h-[38px]" value="${s[0]}" oninput="setv(${ei},${i},0,this.value)" aria-label="Set ${i+1} kg">
+                  <span class="text-slate-500 text-xs font-bold">×</span>
+                  <input type="number" placeholder="reps" class="w-14 sm:w-16 text-center text-xs font-bold font-mono min-h-[38px]" value="${s[1]}" oninput="setv(${ei},${i},1,this.value)" aria-label="Set ${i+1} reps">
+                  <button type="button" id="check-btn-${ei}-${i}" class="check-trigger ${isDone ? 'checked' : ''}" onclick="toggleSetDone(${ei},${i})" aria-label="Mark set ${i+1} completed">
+                    <svg class="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  </button>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <!-- Stretches & Mobility -->
+  <div class="athletic-card">
+    <h3 class="font-condensed font-black text-amber-400 text-lg uppercase tracking-wider mb-3">STRETCHES & MOBILITY</h3>
+    <div class="grid sm:grid-cols-2 gap-3">
+      ${d.st.map((s, i) => {
+        const sImg = getExImg(s);
+        return `
+        <div class="flex items-center gap-3 p-2.5 rounded-xl bg-onyx-900 border border-white/[0.06]">
+          <img src="${sImg}" alt="${s}" class="w-14 h-14 rounded-lg object-cover bg-black flex-shrink-0 cursor-pointer border border-white/10 hover:border-amber-500 transition" onclick="openModal('${s.replace(/'/g, "\\'")}', '${sImg}', 'Hold smoothly, breathe deeply, 2 × 30 seconds.')">
+          <div class="flex-1">
+            ${chk(L.st['s' + i], `setSt('s${i}',this.checked)`, `<span dir="ltr" class="font-bold text-xs sm:text-sm text-slate-200">${s}</span>`)}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <h3 class="font-condensed font-black text-amber-400 text-lg uppercase tracking-wider mt-5 mb-3">CARDIO FINISH</h3>
+    <div class="flex items-center gap-3 p-2.5 rounded-xl bg-onyx-900 border border-white/[0.06]">
+      <img src="${getExImg(CD)}" alt="${CD}" class="w-14 h-14 rounded-lg object-cover bg-black flex-shrink-0 cursor-pointer border border-white/10 hover:border-amber-500 transition" onclick="openModal('${CD}', '${getExImg(CD)}', 'Speed 5-6 km/h, incline 2-3%, zone 2 aerobic cardio.')">
+      <div class="flex-1">
+        ${chk(L.st.c, `setSt('c',this.checked)`, `<span dir="ltr" class="font-black font-condensed tracking-wider text-amber-400 text-base uppercase">${CD}</span>`)}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* Tab 2: Nutrition Plan */
+function nut() {
+  const x = dd();
+  return `
+  <!-- Nutrition Header -->
+  <div class="athletic-card">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-condensed font-black tracking-wide text-white uppercase">MACRONUTRIENT & DIET PLAN</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Strict cut target: 1518 kcal | 123g Protein | ~115g Carbs | ~35g Fats</p>
+      </div>
+      <div class="flex items-center gap-3 bg-onyx-900 border border-white/10 p-2 rounded-xl">
+        <span class="text-xs font-bold font-condensed tracking-wider uppercase ${x.b == 'b' ? 'text-amber-400' : 'text-slate-400'}">Baladi Bread</span>
+        <label class="relative inline-flex items-center cursor-pointer min-h-[44px]">
+          <input type="checkbox" class="sr-only peer" ${x.b == 'p' ? 'checked' : ''} onchange="setCarb(this.checked)" aria-label="Toggle carbohydrate source">
+          <div class="w-11 h-6 bg-onyx-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+        </label>
+        <span class="text-xs font-bold font-condensed tracking-wider uppercase ${x.b == 'p' ? 'text-amber-400' : 'text-slate-400'}">Boiled Potatoes</span>
+      </div>
+    </div>
+
+    <!-- Macro Breakdown Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4 pt-4 border-t border-white/[0.08] text-center">
+      <div class="p-3 rounded-xl bg-onyx-900 border border-white/[0.06]">
+        <div class="text-[11px] text-slate-400 font-condensed uppercase tracking-wider font-bold">CALORIES</div>
+        <div class="text-2xl font-mono font-black text-amber-400 mt-0.5">1518</div>
+        <div class="text-[10px] text-slate-500 font-mono">kcal</div>
+      </div>
+      <div class="p-3 rounded-xl bg-onyx-900 border border-white/[0.06]">
+        <div class="text-[11px] text-slate-400 font-condensed uppercase tracking-wider font-bold">PROTEIN</div>
+        <div class="text-2xl font-mono font-black text-sky-400 mt-0.5">123</div>
+        <div class="text-[10px] text-slate-500 font-mono">grams</div>
+      </div>
+      <div class="p-3 rounded-xl bg-onyx-900 border border-white/[0.06]">
+        <div class="text-[11px] text-slate-400 font-condensed uppercase tracking-wider font-bold">CARBS</div>
+        <div class="text-2xl font-mono font-black text-amber-300 mt-0.5">~115</div>
+        <div class="text-[10px] text-slate-500 font-mono">grams</div>
+      </div>
+      <div class="p-3 rounded-xl bg-onyx-900 border border-white/[0.06]">
+        <div class="text-[11px] text-slate-400 font-condensed uppercase tracking-wider font-bold">FATS</div>
+        <div class="text-2xl font-mono font-black text-rose-400 mt-0.5">~35</div>
+        <div class="text-[10px] text-slate-500 font-mono">grams</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meals Breakdown -->
+  ${M.map((m, i) => `
+  <div class="athletic-card">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-condensed font-black text-xl text-white uppercase tracking-wide">${m.t}</h3>
+      <span class="text-xs font-mono font-bold bg-onyx-900 px-3 py-1 rounded-lg text-amber-400 border border-amber-500/30">${m.k} kcal • ${m.p}g P</span>
+    </div>
+    <div class="space-y-1">
+      ${m.it.map((t, j) => mealItem(i, j, t)).join('')}
+    </div>
+  </div>`).join('')}
+
+  <!-- Water & Supplements -->
+  <div class="athletic-card">
+    <h3 class="font-condensed font-black text-amber-400 text-lg uppercase tracking-wide mb-2">SUPPLEMENTS & HYDRATION</h3>
+    <div class="grid sm:grid-cols-2 gap-2">
+      ${SUP.map((s, i) => chk(x.sp[i], `setSp(${i},this.checked)`, `<span dir="ltr" class="font-medium">${s}</span>`)).join('')}
+    </div>
+    <div class="mt-4 pt-3.5 border-t border-white/[0.08]">
+      <div class="flex justify-between text-xs text-slate-400 mb-1.5 font-condensed tracking-wider uppercase">
+        <span class="font-bold">Water Progress</span>
+        <b class="text-sky-400 font-mono text-sm">${x.wt} / 3.5 Liters</b>
+      </div>
+      ${bar(x.wt / 3.5 * 100, 'bg-sky-500')}
+    </div>
+  </div>`;
+}
+
+/* Tab 3: Analytics & Progress */
+function weeks() {
+  const ds = dates();
+  if (!ds.length) return [];
+  const mx = Math.max(4, ...ds.map(wkOf));
+  const r = [];
+  let pw = null;
+  for (let w = 1; w <= mx; w++) {
+    const f = ds.filter(d => wkOf(d) === w);
+    const ws = f.filter(d => S.w[d]).map(d => +S.w[d]);
+    const avg = ws.length ? ws.reduce((a, b) => a + b) / ws.length : null;
+    const tv = f.reduce((a, d) => a + vol(d), 0), pv = r.length ? r[r.length - 1].tv : 0;
+    r.push({
+      w,
+      avg,
+      ch: avg != null && pw != null ? avg - pw : null,
+      dc: f.filter(d => mealDone(d, 0) && mealDone(d, 1)).length,
+      kc: f.reduce((a, d) => a + kcal(d), 0),
+      wo: f.filter(d => vol(d) > 0).length,
+      tv,
+      pc: pv > 0 ? (tv - pv) / pv * 100 : null
+    });
+    if (avg != null) pw = avg;
+  }
+  return r;
+}
+
+function ana() {
+  const W = weeks(), names = [...new Set(D.flatMap(d => d.ex.map(e => e.n)))];
+  selEx = selEx || names[0];
+  const tot = W.reduce((a, w) => a + w.kc, 0), days = W.reduce((a, w) => a + w.dc, 0);
+  const cc = c => c == null ? 'text-slate-400' : c <= -0.75 ? 'text-emerald-400 font-bold' : c < 0 ? 'text-amber-400 font-bold' : 'text-red-400 font-bold';
+
+  return `
+  <!-- Weekly Summary Table -->
+  <div class="athletic-card overflow-x-auto">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-condensed font-black text-xl text-white uppercase tracking-wide">WEEKLY PROGRESSION (Target: −0.75 to −1.0 kg/wk)</h2>
+      <span class="text-xs text-slate-400 font-condensed tracking-wider uppercase font-bold">Compliant Days: <b class="text-emerald-400 font-mono text-sm">${days}</b></span>
+    </div>
+    <table class="w-full text-xs text-center whitespace-nowrap">
+      <thead class="text-slate-400 border-b border-white/[0.08] font-condensed uppercase tracking-wider text-sm">
+        <tr>
+          <th class="p-2.5 text-left">Week</th>
+          <th>Avg Weight</th>
+          <th>Change</th>
+          <th>Diet Compliance</th>
+          <th>Calorie Adherence</th>
+          <th>Workouts</th>
+          <th>Volume (kg)</th>
+          <th>vs Previous</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${W.length ? W.map(w => `
+        <tr class="border-t border-white/[0.06] hover:bg-onyx-700/40 font-mono">
+          <td class="p-2.5 text-left font-bold text-slate-200">Week ${w.w}</td>
+          <td>${fmt(w.avg)} kg</td>
+          <td class="${cc(w.ch)}">${w.ch == null ? '—' : (w.ch > 0 ? '+' : '') + fmt(w.ch, 2) + ' kg'}</td>
+          <td>${Math.round(w.dc / 7 * 100)}%</td>
+          <td>${Math.round(w.kc / (1518 * 7) * 100)}%</td>
+          <td><span class="text-amber-400 font-bold font-mono">${w.wo}</span>/5</td>
+          <td>${fmt(w.tv, 0)}</td>
+          <td class="${w.pc == null ? '' : w.pc >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${w.pc == null ? '—' : (w.pc > 0 ? '+' : '') + fmt(w.pc) + '%'}</td>
+        </tr>`).join('') : '<tr><td colspan="8" class="p-4 text-slate-400 font-sans">No workout or body weight entries yet.</td></tr>'}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Charts -->
+  <div class="athletic-card">
+    <h2 class="font-condensed font-black text-xl text-white uppercase tracking-wide mb-2">BODY WEIGHT TRAJECTORY</h2>
+    <div class="relative h-64"><canvas id="cW"></canvas></div>
+  </div>
+
+  <div class="athletic-card">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <h2 class="font-condensed font-black text-xl text-white uppercase tracking-wide">PROGRESSIVE OVERLOAD (VOLUME & MAX KG)</h2>
+      <select dir="ltr" class="text-xs font-semibold min-h-[44px]" onchange="selEx=this.value;drawEx()">
+        ${names.map(n => `<option ${n == selEx ? 'selected' : ''}>${n}</option>`).join('')}
+      </select>
+    </div>
+    <div class="relative h-72"><canvas id="cE"></canvas></div>
+  </div>
+
+  <!-- Backup & Export -->
+  <div class="athletic-card">
+    <h2 class="font-condensed font-black text-xl text-white uppercase tracking-wide mb-2">BACKUP & DATA RECOVERY</h2>
+    <div class="flex flex-wrap gap-2 mb-2">
+      <button class="btn-gold text-xs" onclick="expD()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+        <span>Export Data (Copy JSON)</span>
+      </button>
+      <button class="btn-stealth text-xs" onclick="impD()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        <span>Import Data</span>
+      </button>
+      <input type="file" accept=".json,application/json" class="text-xs cursor-pointer min-h-[44px]" onchange="fileD(this)">
+    </div>
+    <textarea id="bk" dir="ltr" rows="4" class="w-full text-xs font-mono" placeholder="Paste backup JSON here, then click Import"></textarea>
+    <p id="bkm" class="text-xs text-slate-400 mt-1 font-mono"></p>
+  </div>`;
+}
+
+function expD() {
+  const t = $('#bk');
+  t.value = JSON.stringify(S);
+  t.select();
+  let m = 'Data exported. Copied to clipboard!';
+  try { navigator.clipboard.writeText(t.value); } catch (e) {}
+  $('#bkm').textContent = m;
+}
+
+function impD() {
+  try {
+    const o = JSON.parse($('#bk').value);
+    if (!o || typeof o !== 'object' || !o.w || !o.d || !o.l) throw 0;
+    S = { w: o.w, d: o.d, l: o.l };
+    save();
+    render();
+    alert('Import successful!');
+  } catch (e) {
+    $('#bkm').textContent = 'Invalid JSON structure.';
+  }
+}
+
+function fileD(i) {
+  const f = i.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { $('#bk').value = r.result; impD(); };
+  r.readAsText(f);
+}
+
+function post() {
+  Chart.defaults.color = '#94A3B8';
+  Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.08)';
+  chW && chW.destroy();
+  const wd = Object.keys(S.w).filter(d => S.w[d]).sort();
+  if (wd.length) {
+    const b = +S.w[wd[0]], dy = d => (new Date(d) - new Date(wd[0])) / 864e5 / 7;
+    chW = new Chart($('#cW'), {
+      type: 'line',
+      data: {
+        labels: wd,
+        datasets: [
+          { label: 'Actual Weight (kg)', data: wd.map(d => +S.w[d]), borderColor: '#F59E0B', backgroundColor: '#F59E0B', tension: 0.25 },
+          { label: 'Target −0.75kg/wk', data: wd.map(d => b - .75 * dy(d)), borderColor: '#71717A', borderDash: [6, 4], pointRadius: 0 },
+          { label: 'Target −1.0kg/wk', data: wd.map(d => b - dy(d)), borderColor: '#52525B', borderDash: [2, 4], pointRadius: 0 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+  drawEx();
+}
+
+function drawEx() {
+  chE && chE.destroy();
+  const n = selEx;
+  const pts = Object.keys(S.l).sort().map(d => {
+    const a = ((S.l[d].sets || {})[n] || []).filter(Boolean), v = sv(a);
+    return v > 0 ? { d, m: Math.max(...a.map(x => +x[0] || 0)), v } : null;
+  }).filter(Boolean);
+
+  chE = new Chart($('#cE'), {
+    type: 'line',
+    data: {
+      labels: pts.map(p => `${p.d} (W${wkOf(p.d)})`),
+      datasets: [
+        { label: 'Max Weight (kg)', data: pts.map(p => p.m), borderColor: '#F59E0B', backgroundColor: '#F59E0B', yAxisID: 'y', tension: 0.25 },
+        { label: 'Total Volume (kg)', data: pts.map(p => p.v), borderColor: '#38BDF8', backgroundColor: '#38BDF8', yAxisID: 'y1', tension: 0.25 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { position: 'left', title: { display: true, text: 'kg' } },
+        y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Volume' } }
+      }
+    }
+  });
+}
+
+function render() {
+  $('#date').value = cur;
+  $('#nav').innerHTML = T.map((t) => `
+    <button class="tab-pill ${t.id == tab ? 'on' : ''}" onclick="goTab(${t.id})" role="tab" aria-selected="${t.id == tab}">
+      ${t.icon}
+      <span>${t.label}</span>
+    </button>
+  `).join('');
+  $('#app').innerHTML = [daily, log, nut, ana][tab]();
+  if (tab == 3) post();
+  updateTimerUI();
+}
+
+render();
+</script>
+</body>
+</html>

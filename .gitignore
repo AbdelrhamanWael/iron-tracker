@@ -1,0 +1,6 @@
+# Dependencies & skills
+.agents/
+node_modules/
+
+# Backups
+*.original.html
